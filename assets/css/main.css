@@ -1,0 +1,154 @@
+:root {
+  /* Paleta azul — Sections 1 y 2 */
+  --blue-950: #071a3d;
+  --blue-900: #0a2463;
+  --blue-700: #1a3fa0;
+  --blue-500: #3e92cc;
+  --blue-200: #a9c4f5;
+  --blue-100: #d6e4ff;
+  --blue-50: #eef3ff;
+  --blue-cream: #f4f7ff;
+
+  /* Paleta B&W — Sections 3 y 4 */
+  --ink: #0a0a0a;
+  --paper: #ffffff;
+  --paper-dim: #f4f4f2;
+  --grey-line: #e5e5e5;
+  --grey-tag: #eeeeee;
+  --grey-text: #555555;
+
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-display: 'Italiana', serif;
+  --font-script: 'Pinyon Script', cursive;
+  --font-sans: 'Space Grotesk', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-lg: 22px;
+  --nav-h: 68px;
+  --pad-section: clamp(64px, 8vw, 110px);
+}
+
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  /* compensa el navbar fijo al saltar por anclas */
+  scroll-padding-top: calc(var(--nav-h) + 12px);
+}
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+
+/* ————— Contenedor fluido por resolución ————— */
+.container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+/* ————— Secciones a pantalla completa —————
+   Cada section ocupa mínimo 1 viewport (svh para móviles con barra dinámica)
+   y centra su contenido verticalmente. El contenido largo puede crecer
+   más allá de 100svh sin recortarse (min-height, no height). */
+main > section[id],
+section[id] {
+  min-height: 100svh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-margin-top: var(--nav-h);
+  scroll-snap-align: start;
+  overflow: clip;
+  padding-block: var(--pad-section);
+}
+main { scroll-snap-type: y proximity; }
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: clamp(11px, 1.4vw, 12px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(13px, 1.6vw, 14px);
+  padding: clamp(11px, 1.6vw, 13px) clamp(20px, 3vw, 26px);
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+
+/* Utilidad reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ————— Breakpoints globales —————
+   360 cel chico · 480 cel mediano · 600 cel grande ·
+   768 tablet · 1024 PC chico · 1280 PC mediano ·
+   1536 PC grande · 1920+ ultra */
+
+/* Tablet portrait y PC chico: contenedor un poco más ancho */
+@media (max-width: 1024px) {
+  .container { width: min(960px, 92%); }
+}
+
+/* Celulares y tablet chica */
+@media (max-width: 768px) {
+  :root { --nav-h: 60px; --pad-section: clamp(56px, 10vw, 72px); }
+  .container { width: min(640px, 92%); }
+  main { scroll-snap-type: none; } /* evita saltos incómodos con contenido largo en móvil */
+}
+
+/* Celular mediano / grande */
+@media (max-width: 480px) {
+  .container { width: calc(100% - 32px); }
+  .btn { width: 100%; }
+}
+
+/* Celular chico 320–360 */
+@media (max-width: 380px) {
+  :root { --pad-section: 48px; }
+  body { font-size: 15px; }
+}
+
+/* PC grande */
+@media (min-width: 1536px) {
+  .container { width: min(1400px, 90%); }
+}
+
+/* Ultra / 2K / 4K */
+@media (min-width: 1920px) {
+  .container { width: min(1600px, 88%); }
+  body { font-size: 18px; }
+}
+@media (min-width: 2560px) {
+  .container { width: min(1800px, 86%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}

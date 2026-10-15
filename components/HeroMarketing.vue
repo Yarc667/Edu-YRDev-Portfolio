@@ -1,9 +1,44 @@
 <template>
   <section id="hero-marketing" class="hero-blue">
+    <!-- ————— Fondo animado: imagen full-bleed + árboles meciéndose + niebla ————— -->
+    <div class="hero-bg" aria-hidden="true">
+      <!-- Parallax lento (Ken Burns) que envuelve cielo y árboles para que se muevan juntos -->
+      <div class="bg-parallax">
+        <!-- Capa cielo/montañas (recorta la franja de árboles) -->
+        <NuxtImg
+          class="bg-layer layer-sky"
+          src="/img/hero_edu.webp"
+          alt=""
+          sizes="xs:100vw sm:100vw md:100vw lg:100vw xl:100vw"
+          loading="eager"
+          fetchpriority="high"
+          preload
+        />
+        <!-- Capa de árboles: misma imagen recortada a la franja inferior, con vaivén anclado a la base -->
+        <NuxtImg
+          class="bg-layer layer-trees"
+          src="/img/hero_edu.webp"
+          alt=""
+          sizes="xs:100vw sm:100vw md:100vw lg:100vw xl:100vw"
+          loading="eager"
+        />
+      </div>
+
+      <!-- Niebla en capas que se desplaza entre los árboles -->
+      <div class="fog-layer">
+        <span class="fog fog-1" />
+        <span class="fog fog-2" />
+        <span class="fog fog-3" />
+      </div>
+
+      <!-- Scrim neutro (sin tiñe la imagen) solo para dar contraste al texto -->
+      <div class="hero-tint" />
+      <div class="hero-vignette" />
+    </div>
+
     <div class="container hero-grid">
       <p class="top-kicker reveal">Maximalism. &nbsp;Luxury typography. &nbsp;Conceptual sketch.</p>
 
-      <!-- Tipografía lujo como Imagen 1. Para cambiar la foto: sustituye el src de .hero-photo -->
       <h1 class="lux-type reveal">
         <span class="line line-1">
           <span class="serif-cond">EDUARDO</span><br />
@@ -14,31 +49,17 @@
           <span class="script">professional</span>
         </span>
       </h1>
-
-      <div class="photo-card reveal">
-        <!-- ⚠️ Reemplaza este placeholder con la imagen que me pasarás después -->
-        <img
-          class="hero-photo"
-          src="https://images.unsplash.com/photo-1493421419110-74f4e85ba126?q=80&w=1600&auto=format&fit=crop"
-          alt="Eduardo Martinez — Marketing Professional"
-        />
-        <div class="photo-veil" />
-        <div class="photo-caption">
-          <span>Portfolio — Vol.01</span>
-          <span class="cap-right">Azul profundo / Editorial</span>
-        </div>
-      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* Hero exacto a 1 pantalla: altura fija 100svh, contenido compacto y centrado */
+/* ============================================================
+   HERO ANIMADO — fondo full-bleed, árboles con vaivén y niebla
+   ============================================================ */
 section.hero-blue {
-  background:
-    radial-gradient(1100px 500px at 50% -80px, #2b5bd7 0%, transparent 60%),
-    radial-gradient(800px 420px at 90% 20%, rgba(62,146,204,.45) 0%, transparent 60%),
-    linear-gradient(180deg, var(--blue-950) 0%, var(--blue-900) 55%, #12307f 100%);
+  /* Gradiente azul de respaldo (se ve detrás si la imagen tarda/falta) */
+  background: linear-gradient(180deg, var(--blue-950) 0%, var(--blue-900) 55%, #12307f 100%);
   color: #eef3ff;
   height: 100vh;
   height: 100svh;
@@ -54,23 +75,129 @@ section.hero-blue {
   position: relative;
   overflow: hidden;
 }
-.hero-blue::before {
-  content: '';
-  position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
-  background-size: 26px 26px;
-  mask-image: radial-gradient(700px 400px at 50% 0%, black, transparent 75%);
+
+/* —————— Capa de fondo animada —————— */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
   pointer-events: none;
 }
-.hero-grid { position: relative; text-align: center; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: clamp(0px, 3vh, 28px); }
+/* El parallax se escala y hace un travelling lentísimo.
+   transform-origin cerca de la base: el zoom agranda la franja del Jeep/persona. */
+.bg-parallax {
+  position: absolute;
+  inset: -3%;
+  transform-origin: 50% 85%;
+  animation: kenburns 46s ease-in-out infinite;
+  will-change: transform;
+}
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+}
+
+/* Cielo + montañas: visible arriba, se desvanece hacia la franja de árboles */
+.layer-sky {
+  -webkit-mask-image: linear-gradient(180deg, #000 0 32%, transparent 45%);
+  mask-image: linear-gradient(180deg, #000 0 32%, transparent 45%);
+}
+
+/* Árboles: franja inferior con vaivén anclado a la base (las copas se mueven, las raíces no).
+   El cruce suave con la capa de cielo queda oculto por la niebla. */
+.layer-trees {
+  transform-origin: 50% 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 32%, #000 45% 100%);
+  mask-image: linear-gradient(180deg, transparent 32%, #000 45% 100%);
+  filter: saturate(1.05) contrast(1.04) brightness(1.01);
+  animation: treesway 12s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes kenburns {
+  0%   { transform: scale(1.16) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.24) translate3d(-1%, -0.8%, 0); }
+  100% { transform: scale(1.16) translate3d(0, 0, 0); }
+}
+@keyframes treesway {
+  0%, 100% { transform: skewX(-0.9deg) translateX(-4px) scale(1.02); }
+  50%      { transform: skewX(0.9deg) translateX(4px) scale(1.045); }
+}
+
+/* —————— Niebla —————— */
+.fog-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.fog {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(26px);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  will-change: transform, opacity;
+}
+.fog-1 {
+  width: 75%; height: 42%; left: -12%; top: 20%;
+  background: radial-gradient(closest-side, rgba(255,255,255,.9), rgba(255,255,255,0) 72%);
+  animation: fogmove 30s ease-in-out infinite;
+}
+.fog-2 {
+  width: 62%; height: 34%; right: -14%; top: 30%;
+  background: radial-gradient(closest-side, rgba(214,228,255,.85), rgba(214,228,255,0) 72%);
+  animation: fogmove 44s ease-in-out infinite reverse;
+}
+.fog-3 {
+  width: 88%; height: 30%; left: 4%; top: 44%;
+  background: radial-gradient(closest-side, rgba(255,255,255,.6), rgba(255,255,255,0) 75%);
+  animation: fogmove 58s ease-in-out infinite;
+}
+@keyframes fogmove {
+  0%, 100% { transform: translate3d(-7%, 1.5%, 0) scale(1); opacity: .36; }
+  50%      { transform: translate3d(7%, -1.5%, 0) scale(1.15); opacity: .6; }
+}
+
+/* —————— Scrim neutro para contraste del texto (no tiñe la imagen) —————— */
+.hero-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.22) 30%, rgba(0,0,0,.05) 55%, rgba(0,0,0,.5) 100%);
+}
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 100% at 50% 45%, transparent 58%, rgba(0,0,0,.42) 100%);
+}
+
+/* —————— Contenido —————— */
+.hero-grid {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: clamp(0px, 3vh, 28px);
+}
 .top-kicker {
   font-family: var(--font-sans);
-  color: rgba(238,243,255,.55);
+  color: rgba(238,243,255,.75);
   font-size: clamp(11px, 1.6vw, 13px);
   margin: 0 0 6px;
   text-wrap: balance;
+  text-shadow: 0 1px 14px rgba(4,12,33,.6);
 }
-.lux-type { margin: 0; line-height: .9; }
+.lux-type { margin: 0; line-height: .9; text-shadow: 0 4px 40px rgba(4,12,33,.6); }
 .lux-type .line {
   display: flex;
   flex-wrap: wrap;
@@ -113,80 +240,42 @@ section.hero-blue {
   color: #fff;
   line-height: 1;
 }
-.photo-card {
-  position: relative;
-  margin: 14px auto 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  max-width: 960px;
-  width: 100%;
-  aspect-ratio: 21 / 9;
-  max-height: 34vh;
-  max-height: 34svh;
-  box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.18) inset;
-  background: #0c2a6b;
-  flex-shrink: 1;
-  min-height: 0;
-}
-.hero-photo { width: 100%; height: 100%; object-fit: cover; filter: saturate(1.05) contrast(1.02); }
-.photo-veil {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(10,36,99,.05) 40%, rgba(7,26,61,.42) 100%),
-              linear-gradient(90deg, rgba(62,146,204,.18), transparent 40%, transparent 60%, rgba(62,146,204,.18));
-}
-.photo-caption {
-  position: absolute; left: 18px; right: 18px; bottom: 14px;
-  display: flex; justify-content: space-between; gap: 12px;
-  font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
-  color: rgba(255,255,255,.85);
+
+/* —————— Respetar "reducir movimiento" —————— */
+@media (prefers-reduced-motion: reduce) {
+  .bg-parallax,
+  .layer-trees,
+  .fog { animation: none !important; }
 }
 
-/* ——— Pantallas bajas: compactar para que siga cabiendo en 100svh ——— */
+/* —————— Pantallas bajas: compactar —————— */
 @media (max-height: 780px) {
   .top-kicker { display: none; }
-  .photo-card { margin-top: 10px; max-height: 30vh; max-height: 30svh; }
 }
 @media (max-height: 640px) {
   .line-1 .serif-cond { font-size: clamp(28px, 6vh, 56px); }
   .line-1 .script { font-size: clamp(32px, 6.6vh, 62px); }
   .line-2 .serif-cond.small { font-size: clamp(18px, 3.6vh, 36px); }
   .line-2 .script { font-size: clamp(24px, 4.4vh, 46px); }
-  .photo-card { max-height: 26vh; max-height: 26svh; }
 }
 
-/* ——— PC chico / tablet landscape ——— */
+/* —————— Tablet / móvil: ajustes tipográficos y de encuadre —————— */
 @media (max-width: 1024px) {
-  .photo-card { aspect-ratio: 16 / 8; max-width: 860px; max-height: 32vh; max-height: 32svh; }
+  .bg-layer { object-position: 52% 100%; }
 }
-/* ——— Tablet portrait ——— */
 @media (max-width: 768px) {
   .lux-type .line { gap: 0 .25em; }
-  .photo-card { aspect-ratio: 16 / 9; border-radius: 18px; max-height: 30vh; max-height: 30svh; }
+  .bg-layer { object-position: 55% 100%; }
 }
-/* ——— Celular grande: mantener filas (no apilar) para no crecer en alto ——— */
 @media (max-width: 600px) {
-  .photo-card { aspect-ratio: 16 / 10; max-height: 26vh; max-height: 26svh; }
-  .photo-caption { font-size: 11px; left: 12px; right: 12px; }
-  .cap-right { display: none; }
-  .photo-caption { justify-content: center; }
+  .bg-layer { object-position: 58% 100%; }
 }
-/* ——— Celular mediano ——— */
 @media (max-width: 480px) {
   .line-1 .serif-cond { font-size: clamp(30px, 9vw, 42px); }
   .line-1 .script { font-size: clamp(34px, 10vw, 48px); }
-  .photo-card { margin-top: 10px; border-radius: 16px; }
 }
-/* ——— Celular chico ——— */
 @media (max-width: 380px) {
   .line-1 .serif-cond { font-size: clamp(28px, 10vw, 38px); }
   .line-1 .script { font-size: clamp(32px, 11vw, 44px); }
-  .photo-card { aspect-ratio: 16 / 11; max-height: 24vh; max-height: 24svh; }
-}
-/* ——— Ultra / monitores grandes: crece a lo ancho, no a lo alto ——— */
-@media (min-width: 1920px) {
-  .photo-card { max-width: 1200px; aspect-ratio: 21 / 8; max-height: 36vh; max-height: 36svh; }
-}
-@media (min-width: 2560px) {
-  .photo-card { max-width: 1700px; }
 }
 </style>

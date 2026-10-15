@@ -1,0 +1,30 @@
+# ————— Dependencias —————
+node_modules
+.pnpm-store
+.yarn
+yarn.lock
+pnpm-lock.yaml
+
+# ————— Build / Nuxt —————
+.nuxt
+.output
+.nitro
+.cache
+dist
+.data
+
+# ————— Entorno —————
+.env
+.env.*
+!.env.example
+
+# ————— Logs —————
+*.log*
+logs
+
+# ————— Editor / Sistema —————
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db

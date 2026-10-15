@@ -2,6 +2,19 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+  modules: ['@nuxt/image'],
+  image: {
+    format: ['webp'],
+    // Breakpoints para el srcset. El máximo (1280) con densidad 2x da 2560px,
+    // que es el ancho real del archivo, así evitamos variantes reescaladas.
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280
+    }
+  },
   app: {
     head: {
       title: 'Eduardo Martinez — Marketing Professional & Developer',
